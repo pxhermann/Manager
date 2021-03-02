@@ -1,0 +1,257 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AE12202B-DF5A-4BBF-9FB0-AAE2BB409D08}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Manager</RootNamespace>
+    <AssemblyName>Manager</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>App.ico</ApplicationIcon>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;_DB_SQLCE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SqlServerCe">
+      <HintPath>..\System.Data.SqlServerCe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="BaseView.Designer.cs">
+      <DependentUpon>BaseView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CustomSetting.cs" />
+    <Compile Include="Database.cs" />
+    <Compile Include="DlgAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DlgAbout.Designer.cs">
+      <DependentUpon>DlgAbout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DlgAddress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DlgAddress.Designer.cs">
+      <DependentUpon>DlgAddress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DlgChangePwd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DlgChangePwd.Designer.cs">
+      <DependentUpon>DlgChangePwd.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DlgLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DlgLogin.Designer.cs">
+      <DependentUpon>DlgLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DlgProduct.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DlgProduct.Designer.cs">
+      <DependentUpon>DlgProduct.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DlgSetupMDB.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DlgSetupMDB.Designer.cs">
+      <DependentUpon>DlgSetupMDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DlgSetupSQL.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DlgSetupSQL.designer.cs">
+      <DependentUpon>DlgSetupSQL.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DlgSetupSQLCE.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DlgSetupSQLCE.Designer.cs">
+      <DependentUpon>DlgSetupSQLCE.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DlgUser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DlgUser.Designer.cs">
+      <DependentUpon>DlgUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalData.cs" />
+    <Compile Include="GlobalMethods.cs" />
+    <Compile Include="MapiApi.cs" />
+    <Compile Include="Objects\Address.cs">
+    </Compile>
+    <Compile Include="Objects\Product.cs" />
+    <Compile Include="Objects\User.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="BaseView.resx">
+      <DependentUpon>BaseView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DlgAbout.resx">
+      <DependentUpon>DlgAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DlgAddress.resx">
+      <DependentUpon>DlgAddress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DlgChangePwd.resx">
+      <DependentUpon>DlgChangePwd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DlgLogin.resx">
+      <DependentUpon>DlgLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DlgProduct.resx">
+      <DependentUpon>DlgProduct.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DlgSetupMDB.resx">
+      <DependentUpon>DlgSetupMDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DlgSetupSQL.resx">
+      <DependentUpon>DlgSetupSQL.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DlgSetupSQLCE.resx">
+      <DependentUpon>DlgSetupSQLCE.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DlgUser.resx">
+      <DependentUpon>DlgUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewAddress.resx">
+      <DependentUpon>ViewAddress.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewIntro.resx">
+      <DependentUpon>ViewIntro.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewProduct.resx">
+      <DependentUpon>ViewProduct.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewUser.resx">
+      <DependentUpon>ViewUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="ViewAddress.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewAddress.Designer.cs">
+      <DependentUpon>ViewAddress.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewIntro.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewIntro.Designer.cs">
+      <DependentUpon>ViewIntro.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewProduct.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewProduct.Designer.cs">
+      <DependentUpon>ViewProduct.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewUser.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ViewUser.Designer.cs">
+      <DependentUpon>ViewUser.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Addr.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Prod.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Key.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\User.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\App.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
