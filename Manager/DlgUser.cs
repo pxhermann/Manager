@@ -34,23 +34,23 @@ namespace Manager
             if ( DialogResult != DialogResult.OK )
                 return;
         // check data 
-            if ( tbName.Text.Trim().Length < 1 )
+            if ( string.IsNullOrEmpty(tbName.Text) )
             {
-                MessageBox.Show(this, "Name may not be empty!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                GM.ShowErrorMessageBox(this, "Name may not be empty!");
                 tbName.Focus();
                 e.Cancel = true;
                 return;
             }
-/*          if ( tbPwd.Text.Length < 1 )
+/*            if ( string.IsNullOrEmpty(tbPwd.Text) )
             {
-                MessageBox.Show(this, "Password may not be empty!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                GM.ShowErrorMessageBox(this, "Password may not be empty!");
                 tbPwd.Focus();
                 e.Cancel = true;
                 return;
             }
-*/          if ( tbPwd.Text != tbPwdConfirm.Text )
+*/            if ( tbPwd.Text != tbPwdConfirm.Text )
             {
-                MessageBox.Show(this, "Confirm password incorrect!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                GM.ShowErrorMessageBox(this, "Confirm password incorrect!");
                 tbPwdConfirm.Focus();
                 tbPwdConfirm.SelectAll();
                 e.Cancel = true;

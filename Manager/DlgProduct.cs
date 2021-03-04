@@ -31,9 +31,9 @@ namespace Manager
             if ( DialogResult != DialogResult.OK )
                 return;
         // check data 
-            if ( tbName.Text.Trim().Length < 1 )
+            if ( string.IsNullOrEmpty(tbName.Text) )
             {
-                MessageBox.Show(this, "Name may not be empty!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                GM.ShowErrorMessageBox(this, "Name may not be empty!");
                 tbName.Focus();
                 e.Cancel = true;
                 return;
@@ -45,7 +45,7 @@ namespace Manager
             try { Data.BuyPrice = decimal.Parse(tbBuyPrice.Text); } 
             catch(Exception ex) 
             { 
-                GM.ReportError(this, ex, "Enter buy price"); 
+                GM.ShowErrorMessageBox(this, "Enter buy price", ex); 
                 tbBuyPrice.Focus(); 
                 e.Cancel = true;
                 return;
@@ -53,7 +53,7 @@ namespace Manager
             try { Data.SalePrice = decimal.Parse(tbSalePrice.Text); } 
             catch(Exception ex) 
             { 
-                GM.ReportError(this, ex, "Enter sale price"); 
+                GM.ShowErrorMessageBox(this, "Enter sale price", ex); 
                 tbSalePrice.Focus(); 
                 e.Cancel = true;
                 return;

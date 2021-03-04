@@ -26,11 +26,11 @@ namespace Manager
         }
         public bool IsValid()
         {
-            return (ID != GD.INVALID_ID);
+            return (ID != DB.INVALID_ID);
         }
         public void Reset()
         {
-            ID = GD.INVALID_ID; 
+            ID = DB.INVALID_ID; 
 
             Name = "";
             Catalog = "";

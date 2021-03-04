@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using Win32Mapi;
 
 namespace Manager
 {
@@ -14,12 +9,13 @@ namespace Manager
         public DlgAbout()
         {
             InitializeComponent();
-            this.Text = String.Format("About {0}", AssemblyTitle);
-            this.lblProduct.Text = AssemblyProduct;
-            this.lblVersion.Text = String.Format("Version {0}", AssemblyVersion);
-            this.lblCopyright.Text = AssemblyCopyright;
-            this.lblCompany.Text = AssemblyCompany;
-            this.tbDescr.Text = AssemblyDescription;
+
+            Text = String.Format("About {0}", AssemblyTitle);
+            lblProduct.Text = AssemblyProduct;
+            lblVersion.Text = String.Format("Version {0}", AssemblyVersion);
+            lblCopyright.Text = AssemblyCopyright;
+            lblCompany.Text = AssemblyCompany;
+            tbDescr.Text = AssemblyDescription;
         }
 
         #region Assembly Attribute Accessors
@@ -104,14 +100,8 @@ namespace Manager
 
         private void lblMail_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("mailto:"+(sender as LinkLabel).Text);
-		
-/*		// send mail
-			Mapi mapi = new Mapi();
-            mapi.AddRecip("xhermann@quick.cz");
-			mapi.Send(IntPtr.Zero, this.Handle, 
-                string.Format("Comment to program '{0}'", AssemblyTitle), "", 
-                Mapi.MapiDialog|Mapi.MapiLogonUI);
-*/        }
+            try { System.Diagnostics.Process.Start("mailto:" + (sender as LinkLabel).Text); }
+            catch (Exception ex) { GM.ShowErrorMessageBox(this, "Error occured when creating email!", ex); }
+        }
     }
 }

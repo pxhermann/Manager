@@ -1,35 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-
-#if _DB_MDB
-using System.Data.OleDb;
-#elif _DB_SQLCE
-using System.Data.SqlServerCe;
-#else 
 using System.Data.SqlClient;
-#endif 
-
 using System.Data;
-using System.Data.Common;
 
 namespace Manager
 {
     public partial class BaseView : UserControl
     {
-#if _DB_MDB
-        protected OleDbDataAdapter dataAdapter = null;
-#elif _DB_SQLCE
-        protected SqlCeDataAdapter dataAdapter = null;
-#else
         protected SqlDataAdapter dataAdapter = null;
-#endif
         protected BindingSource bindDataSrc = null;
-        protected int prevSelID = GD.INVALID_ID;
+        protected int prevSelID = DB.INVALID_ID;
         protected string idColumnName = "";
         protected string selectCommand = "";
 
@@ -169,7 +150,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Searching failed!");
+                GM.ShowErrorMessageBox(this, "Searching failed!", ex);
             }
         }
     #endregion
@@ -221,7 +202,7 @@ namespace Manager
         {
             if ( idColumnName == null || idColumnName.Length<1 )
             {
-                MessageBox.Show(this, string.Format("ID column not set in view '{0}'!{1}{1}Maintainig selection will not work!", ViewTitle, Environment.NewLine), ViewTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                GM.ShowErrorMessageBox(this, string.Format("ID column not set in view '{0}'!{1}{1}Maintainig selection will not work!", ViewTitle, Environment.NewLine));
                 return;
             }
 
@@ -346,7 +327,7 @@ namespace Manager
         {
             if (selectCommand == null || selectCommand.Length < 1)
             {
-                MessageBox.Show(this, string.Format("No select command speficied in view '{0}'!", ViewTitle), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                GM.ShowErrorMessageBox(this, string.Format("No select command speficied in view '{0}'!", ViewTitle));
                 return;
             }
 
@@ -362,39 +343,12 @@ namespace Manager
 
                 if ( dataAdapter == null || dataAdapter.SelectCommand == null || dataAdapter.SelectCommand.CommandText != selectCommand )
                 {
-#if _DB_MDB
-                    dataAdapter = new OleDbDataAdapter(selectCommand, DB.ConnData.GetConnStr());
-                    OleDbCommandBuilder cb = new OleDbCommandBuilder(dataAdapter);
-#elif _DB_SQLCE
-                    dataAdapter = new SqlCeDataAdapter(selectCommand, DB.ConnData.GetConnStr());
-                    SqlCeCommandBuilder cb = new SqlCeCommandBuilder(dataAdapter);
-#else
-                    dataAdapter = new SqlDataAdapter(selectCommand, DB.ConnData.GetConnStr(true));
+                    dataAdapter = new SqlDataAdapter(selectCommand, DB.ConnData.GetConnectionString(true));
                     SqlCommandBuilder cb = new SqlCommandBuilder(dataAdapter);  // create command builder, so that dataAdapter.UpdateCan be called to save data from bindDataSrc.DataSource to database
-#endif
 
                     // Get the Identity column value
                     if ( idColumnName != null && idColumnName.Length>0 )
                     {
-#if _DB_MDB
-                        dataAdapter.RowUpdated += delegate(object sender, OleDbRowUpdatedEventArgs e)
-                        {
-                            if ( e.Status == UpdateStatus.Continue && e.StatementType == StatementType.Insert )
-                            {
-                                e.Row[idColumnName] = new OleDbCommand("SELECT @@IDENTITY", dataAdapter.SelectCommand.Connection).ExecuteScalar();
-                                e.Row.AcceptChanges();
-                            }
-                        };
-#elif _DB_SQLCE
-                        dataAdapter.RowUpdated += delegate(object sender, SqlCeRowUpdatedEventArgs e)
-                        {
-                            if ( e.Status == UpdateStatus.Continue && e.StatementType == StatementType.Insert )
-                            {
-                                e.Row[idColumnName] = new SqlCeCommand("SELECT @@IDENTITY", dataAdapter.SelectCommand.Connection).ExecuteScalar();
-                                e.Row.AcceptChanges();
-                            }
-                        };
-#else
 				        SqlParameter outPar = new SqlParameter();
 				        outPar.ParameterName = "@" + idColumnName;
 				        outPar.SqlDbType = SqlDbType.BigInt;
@@ -405,7 +359,6 @@ namespace Manager
 				        dataAdapter.InsertCommand.UpdatedRowSource = UpdateRowSource.Both;
 				        dataAdapter.InsertCommand.CommandText += ";\r\nSELECT @" + idColumnName + " = @@IDENTITY";
 				        dataAdapter.InsertCommand.Parameters.Add(outPar);
-#endif
                     }
                 }
 
@@ -432,7 +385,7 @@ namespace Manager
             }
             catch (Exception ex)
             {
-                GM.ReportError(this, ex, "Error occured when loading data from database!");
+                GM.ShowErrorMessageBox(this, "Error occured when loading data from database!", ex);
             }
             finally
             {
@@ -455,7 +408,7 @@ namespace Manager
                 }
                 catch(Exception ex)
                 {
-                    GM.ReportError(this, ex, "Error occured when saving changes to database!");
+                    GM.ShowErrorMessageBox(this, "Error occured when saving changes to database!", ex);
                 }
                 finally
                 {

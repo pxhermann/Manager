@@ -50,7 +50,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Error occured when adding user to database!");
+                GM.ShowErrorMessageBox(this, "Error occured when adding user to database!", ex);
             }
         }
         public override void OnEdit()
@@ -60,7 +60,7 @@ namespace Manager
                 DataGridViewRow curRow = dgView.CurrentRow;
                 if ( curRow == null )
                 {
-                    MessageBox.Show(this, "No row selected!", Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    GM.ShowErrorMessageBox(this, "No row selected!");
                     return;
                 }
 
@@ -79,7 +79,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Error occured when editing user!");
+                GM.ShowErrorMessageBox(this, "Error occured when editing user!", ex);
             }
         }
         public override void OnDel()
@@ -91,7 +91,7 @@ namespace Manager
                 DataGridViewRow curRow = dgView.CurrentRow;
                 if ( curRow == null )
                 {
-                    MessageBox.Show(this, "No row selected!", Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    GM.ShowErrorMessageBox(this, "No row selected!");
                     return;
                 }
 
@@ -107,7 +107,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Error occured when deleting user from database!");
+                GM.ShowErrorMessageBox(this, "Error occured when deleting user from database!", ex);
             }
         }
     }

@@ -1,0 +1,153 @@
+USE [master]
+GO
+/****** Object:  Database [TestManager]    Script Date: 04.03.2021 15:35:56 ******/
+CREATE DATABASE [TestManager]
+GO
+
+ALTER DATABASE [TestManager] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [TestManager] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [TestManager] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [TestManager] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [TestManager] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [TestManager] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [TestManager] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [TestManager] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [TestManager] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [TestManager] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [TestManager] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [TestManager] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [TestManager] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [TestManager] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [TestManager] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [TestManager] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [TestManager] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [TestManager] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [TestManager] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [TestManager] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [TestManager] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [TestManager] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [TestManager] SET RECOVERY FULL 
+GO
+ALTER DATABASE [TestManager] SET  MULTI_USER 
+GO
+ALTER DATABASE [TestManager] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [TestManager] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [TestManager] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [TestManager] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [TestManager] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [TestManager] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'TestManager', N'ON'
+GO
+ALTER DATABASE [TestManager] SET QUERY_STORE = OFF
+GO
+
+USE [TestManager]
+GO
+/****** Object:  Table [dbo].[Address]    Script Date: 04.03.2021 15:35:56 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Address](
+	[addr_id] [int] IDENTITY(1,1) NOT NULL,
+	[addr_name] [varchar](50) NULL,
+	[addr_street] [varchar](30) NULL,
+	[addr_city] [varchar](40) NULL,
+	[addr_zip] [varchar](10) NULL,
+	[addr_ICO] [varchar](8) NULL,
+	[addr_DIC] [varchar](14) NULL,
+	[addr_tel] [varchar](128) NULL,
+	[addr_fax] [varchar](128) NULL,
+	[addr_note] [varchar](1024) NULL,
+	[deldate] [datetime] NULL,
+ CONSTRAINT [PK_Address] PRIMARY KEY CLUSTERED 
+(
+	[addr_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Product]    Script Date: 04.03.2021 15:35:56 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Product](
+	[prod_id] [int] IDENTITY(1,1) NOT NULL,
+	[prod_name] [varchar](50) NULL,
+	[prod_catalog] [varchar](20) NULL,
+	[prod_unit] [varchar](10) NULL,
+	[prod_buyprice] [money] NULL,
+	[prod_saleprice] [money] NULL,
+	[prod_vatrate] [money] NULL,
+	[deldate] [datetime] NULL,
+ CONSTRAINT [PK_Product] PRIMARY KEY CLUSTERED 
+(
+	[prod_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Users]    Script Date: 04.03.2021 15:35:56 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Users](
+	[user_id] [int] IDENTITY(1,1) NOT NULL,
+	[user_name] [varchar](50) NULL,
+	[user_pwd] [varchar](128) NULL,
+	[user_cfgXML] [text] NULL,
+	[user_ARadmin] [bit] NULL,
+	[user_ARuser] [bit] NULL,
+	[user_ARaddr] [bit] NULL,
+	[user_ARprod] [bit] NULL,
+	[deldate] [datetime] NULL,
+ CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
+(
+	[user_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_user_ARadmin]  DEFAULT ((0)) FOR [user_ARadmin]
+GO
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_user_ARuser]  DEFAULT ((0)) FOR [user_ARuser]
+GO
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_user_ARaddr]  DEFAULT ((0)) FOR [user_ARaddr]
+GO
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_user_ARprod]  DEFAULT ((0)) FOR [user_ARprod]
+GO
+
+INSERT INTO Users (user_name, user_pwd, user_ARadmin) VALUES ('admin','', 1)
+GO
+
+USE [master]
+GO
+ALTER DATABASE [TestManager] SET  READ_WRITE 
+GO

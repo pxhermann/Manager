@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 
 namespace Manager
 {
-    public partial class ViewAddress : Manager.BaseView
+    public partial class ViewAddress : BaseView
     {
         public ViewAddress()
         {
@@ -53,7 +48,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Error occured when adding address to database!");
+                GM.ShowErrorMessageBox(this, "Error occured when adding address to database!", ex);
             }
         }
         public override void OnEdit()
@@ -65,7 +60,7 @@ namespace Manager
                 DataGridViewRow curRow = dgView.CurrentRow;
                 if ( curRow == null )
                 {
-                    MessageBox.Show(this, "No row selected!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    GM.ShowErrorMessageBox(this, "No row selected!");
                     return;
                 }
 
@@ -83,7 +78,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Error occured when editing address!");
+                GM.ShowErrorMessageBox(this, "Error occured when editing address!", ex);
             }
         }
         public override void OnDel()
@@ -95,7 +90,7 @@ namespace Manager
                 DataGridViewRow curRow = dgView.CurrentRow;
                 if ( curRow == null )
                 {
-                    MessageBox.Show(this, "No row selected!", Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    GM.ShowErrorMessageBox(this, "No row selected!");
                     return;
                 }
 
@@ -111,7 +106,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Error occured when deleting address from database!");
+                GM.ShowErrorMessageBox(this, "Error occured when deleting address from database!", ex);
             }
         }
     }

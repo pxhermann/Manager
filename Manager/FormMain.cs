@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Data.SqlClient;
-using System.IO;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Manager
 {
@@ -25,13 +21,7 @@ namespace Manager
             siVersion.Text = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             appCfg = AppSetting.Load();
-#if _DB_MDB
-            DB.ConnData = appCfg.Mdb;
-#elif _DB_SQLCE
-            DB.ConnData = appCfg.SqlCe;
-#else
             DB.ConnData = appCfg.Sql;
-#endif
 
             UserChanged();
         }
@@ -42,40 +32,22 @@ namespace Manager
 			for (; ;)
 			{
             // test SQL connection
-#if _DB_MDB
-                if ( string.IsNullOrEmpty(DB.ConnData.DbFile) )  // pokud chybi nastaveni, predvypl implicitni hodnoty a prejdi rovnou k nastaveni
+                if ( !DB.ConnData.IsValid() )  // pokud chybi nastaveni, predvypl implicitni hodnoty a prejdi rovnou k nastaveni
                 {
-                    DB.ConnData.DbFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath),"Manager.mdb");
+                    DB.ConnData.Server = ".";
+                    DB.ConnData.Database = "TestManager";
                 }
-#elif _DB_SQLCE
-                if ( string.IsNullOrEmpty(DB.ConnData.DbFile) )  // pokud chybi nastaveni, predvypl implicitni hodnoty a prejdi rovnou k nastaveni
-                {
-                    DB.ConnData.DbFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath),"Manager.sdf");
-                }
-#else
-                if ( string.IsNullOrEmpty(DB.ConnData.Database) )  // pokud chybi nastaveni, predvypl implicitni hodnoty a prejdi rovnou k nastaveni
-                {
-                    DB.ConnData.Server = "(local)";
-                    DB.ConnData.Database = "Manager";
-                }
-#endif
                 else
                 {
                     Cursor.Current = Cursors.WaitCursor;
                     try
                     {
-                        using (DbConnection conn = DB.GetConnection() )
-					        conn.Open();
+                        using (SqlConnection conn = DB.OpenConnection() )
+					        ;
                         break;
                     }
-                    catch (Exception ex)
-                    {
-                        GM.ReportError(this, ex, "Connection to database failed!");
-                    }
-                    finally
-                    {
-                        Cursor.Current = Cursors.Default;
-                    }
+                    catch (Exception ex) { GM.ShowErrorMessageBox(this, "Connection to database failed!", ex); }
+                    finally { Cursor.Current = Cursors.Default; }
                 }
             // setup SQL
                 if ( !SetupDB() )
@@ -86,8 +58,7 @@ namespace Manager
 			}
 
         // login user
-            if ( !Login() )
-                Close();
+            Login();
         }
         // status item has no ContextMenuStrip property, so show context menu after right click
         private void siUser_MouseDown(object sender, MouseEventArgs e)
@@ -105,15 +76,21 @@ namespace Manager
                 miViewTblProd.Checked = (curView is ViewProduct);
                 miViewTblUser.Checked = (curView is ViewUser);
             }
-            else if ( sender == miData )
+            else if (sender == miData)
             {
                 BaseView bv = curView as BaseView;
 
-                miDataAdd.Enabled     = (bv != null && bv.ViewAllowAdd);
-                miDataEdit.Enabled    = (bv != null && bv.ViewAllowEdit);
-                miDataDel.Enabled     = (bv != null && bv.ViewAllowDel);
-                miDataFilter.Enabled  = (bv != null && bv.ViewAllowFilter);
+                miDataAdd.Enabled = (bv != null && bv.ViewAllowAdd);
+                miDataEdit.Enabled = (bv != null && bv.ViewAllowEdit);
+                miDataDel.Enabled = (bv != null && bv.ViewAllowDel);
+                miDataFilter.Enabled = (bv != null && bv.ViewAllowFilter);
                 miDataRefresh.Enabled = (bv != null);
+            }
+            else if (sender == miAppUser)
+            {
+                miAppUserLogin.Enabled = DB.ConnData.IsValid();
+                miAppUserLogout.Enabled = curUser.IsValid();
+                miAppUserChangePwd.Enabled = curUser.IsValid();
             }
         }
         private void toolStripItem_Click(object sender, EventArgs e)
@@ -132,13 +109,13 @@ namespace Manager
             else if ( sender == miAppSetup )  
             {
                 if ( SetupDB() ) 
-                    MessageBox.Show(this, "New setup will take efect till after restarting application!", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    GM.ShowInfoMessageBox(this, "New setup will take efect till after restarting application!");
             }
             else if ( sender == miAppExit )   Application.Exit();
             else if ( sender == miHlpAbout || sender == siVersion )
             {
-                using ( DlgAbout dlg = new DlgAbout() )
-                    dlg.ShowDialog();
+                using (DlgAbout dlg = new DlgAbout())
+                    dlg.ShowDialog(this);
             }
         }
         private void changeView_Click(object sender, EventArgs e)
@@ -171,77 +148,55 @@ namespace Manager
 #region helper methods
         private bool SetupDB()
         {
-#if _DB_MDB
-            using ( DlgSetupMDB dlg = new DlgSetupMDB() )
+            using (DlgSetupDB dlg = new DlgSetupDB())
             {
-                dlg.Data = DB.ConnData;
-                if ( dlg.ShowDialog() != DialogResult.OK )
+                dlg.Data.CopyFrom(appCfg.Sql);
+                if (dlg.ShowDialog(this) != DialogResult.OK)
                     return false;
 
-                appCfg.Mdb = DB.ConnData = dlg.Data;
+                appCfg.Sql.CopyFrom(dlg.Data);
                 appCfg.Save();
             }
-#elif _DB_SQLCE
-            using ( DlgSetupSQLCE dlg = new DlgSetupSQLCE() )
-            {
-                dlg.Data = DB.ConnData;
-                if ( dlg.ShowDialog() != DialogResult.OK )
-                    return false;
-
-                appCfg.SqlCe = DB.ConnData = dlg.Data;
-                appCfg.Save();
-            }
-#else
-            using ( DlgSetupSQL dlg = new DlgSetupSQL() )
-            {
-                dlg.Data = DB.ConnData;
-                if ( dlg.ShowDialog() != DialogResult.OK )
-                    return false;
-
-                appCfg.Sql = DB.ConnData = dlg.Data;
-                appCfg.Save();
-            }
-#endif
 
             return true;
         }
 
-    #region user related methods
+#region user related methods
         private bool Login()
         {
-            using ( DlgLogin dlg = new DlgLogin() )
+            using (DlgLogin dlg = new DlgLogin())
             {
                 dlg.SelUserID = appCfg.LastUserID;
-                if ( dlg.ShowDialog() == DialogResult.OK )
+                if (dlg.ShowDialog(this) != DialogResult.OK)
+                    return false;
+
+                try
                 {
-                    try
-                    {
-                    // save selected user to setting
-                        appCfg.LastUserID = dlg.SelUserID;
-                        appCfg.Save();
+                // save selected user to setting
+                    appCfg.LastUserID = dlg.SelUserID;
+                    appCfg.Save();
 
-                    // load current user
-                        DataTable tbl = DB.GetDataTable("SELECT * FROM Users WHERE user_id ="+dlg.SelUserID);
-                        if ( tbl != null && tbl.Rows.Count > 0 )
-                            curUser.Load(tbl.Rows[0]);
-                    }
-                    catch(Exception ex)
-                    {
-        #if DEBUG
-                        GM.ReportError(this, ex, "Saving selected user failed!");
-        #endif
-                    }
-
-                    UserChanged();  
-                    return true;
+                // load current user
+                    DataTable tbl = DB.GetDataTable("SELECT * FROM Users WHERE user_id ="+dlg.SelUserID);
+                    if ( tbl != null && tbl.Rows.Count > 0 )
+                        curUser.Load(tbl.Rows[0]);
                 }
+                catch(Exception ex)
+                {
+    #if DEBUG
+                    GM.ShowErrorMessageBox(this, "Saving selected user failed!", ex);
+    #endif
+                    return false;
+                }
+
+                UserChanged();  
             }
 
-            return false;
+            return true;
         }
         private void Logout()
         {
-            if ( MessageBox.Show(this, "Really to logout?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes )
+            if ( GM.ShowQuestionMessageBox(this, "Really to logout?") != DialogResult.Yes )
                 return;
 
             curUser.Reset();
@@ -255,10 +210,12 @@ namespace Manager
                 return;
             }
             using ( DlgChangePwd dlg = new DlgChangePwd(curUser.Pwd) )
-                if ( dlg.ShowDialog() == DialogResult.OK )
-                    curUser.Pwd = dlg.tbNewPwd.Text;
-                else 
+            { 
+                if ( dlg.ShowDialog(this) != DialogResult.OK )
                     return;
+
+                curUser.Pwd = dlg.tbNewPwd.Text;
+            }
             // save to database
             try
             {
@@ -267,7 +224,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Saving password to database failed!");
+                GM.ShowErrorMessageBox(this, "Saving password to database failed!", ex);
             }
         }
         private void UserChanged()
@@ -282,9 +239,9 @@ namespace Manager
                 curView.HandleDestroyed -= view_Destroyed;  // změnil se uzivatel, proto takto zamez ulozeni aktualniho layout, protoze by se uložil do configu jineho uzivatele nez ktery layout vytvoril
             SetCurrentView(typeof(ViewIntro));
         }
-    #endregion
+#endregion
 
-    #region methods related to switching current view
+#region methods related to switching current view
         private void SetCurrentView(Type newViewType)
         {
          // ensure valid view
@@ -407,7 +364,7 @@ namespace Manager
             catch(Exception ex)
             {
 #if DEBUG
-                GM.ReportError(this, ex, "Saving view layout!");
+                GM.ShowErrorMessageBox(this, "Saving view layout!", ex);
 #endif
             }
         }

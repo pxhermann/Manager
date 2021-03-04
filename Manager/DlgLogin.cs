@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Data.SqlClient;
 
 namespace Manager
 {
     public partial class DlgLogin : Form
     {
-        public int SelUserID = GD.INVALID_ID;
+        public int SelUserID = DB.INVALID_ID;
 
         public DlgLogin()
         {
@@ -32,7 +25,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Login failed. Cannot read list of users!");
+                GM.ShowErrorMessageBox(this, "Login failed. Cannot read list of users!", ex);
                 DialogResult = DialogResult.Cancel;
             }
         }
@@ -43,7 +36,7 @@ namespace Manager
 
             if ( cbUser.SelectedIndex < 0 )
             {
-                MessageBox.Show(this, "No user selected!", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                GM.ShowErrorMessageBox(this, "No user selected!");
                 cbUser.Focus();
 
                 e.Cancel = true;
@@ -60,7 +53,7 @@ namespace Manager
                     s = string.Format("SELECT COUNT(*) FROM Users WHERE user_id = {0} AND user_pwd = '{1}'", cbUser.SelectedValue, GM.DESEncrypt(tbPwd.Text));
                 if ( (int)DB.ExecuteScalar(s) < 1 )
                 {
-                    MessageBox.Show(this, "Password incorrect!", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    GM.ShowErrorMessageBox(this, "Password incorrect!");
                     tbPwd.Focus();
                     tbPwd.SelectAll();
 
@@ -70,13 +63,10 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Checking password failed!");
+                GM.ShowErrorMessageBox(this, "Checking password failed!", ex);
                 e.Cancel = true;
             }
-            finally
-            {
-                Cursor = Cursors.Default;
-            }
+            finally { Cursor = Cursors.Default; }
 
             SelUserID = (int)cbUser.SelectedValue;
         }

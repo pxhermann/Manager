@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace Manager
 {
@@ -26,23 +19,22 @@ namespace Manager
         // check data 
             if ( tbOldPwd.Text != oldPwd )
             {
-                MessageBox.Show(this, "Old password doesn't match!", Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                GM.ShowErrorMessageBox(this, "Old password doesn't match!");
                 tbOldPwd.Focus();
                 tbOldPwd.SelectAll();
                 e.Cancel = true;
                 return;
             }
-            //
-/*          if ( tbNewPwd.Text.Length < 1 )
+/*            if ( string.IsNullOrEmpty(tbNewPwd.Text) )
             {
-                MessageBox.Show(this, "New password may not be empty!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                GM.ShowErrorMessageBox(this, "New password may not be empty!");
                 tbNewPwd.Focus();
                 e.Cancel = true;
                 return;
             }
-*/          if ( tbNewPwd.Text != tbPwdConfirm.Text )
+*/            if ( tbNewPwd.Text != tbPwdConfirm.Text )
             {
-                MessageBox.Show(this, "Confirm password incorrect!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                GM.ShowErrorMessageBox(this, "Confirm password incorrect!");
                 tbPwdConfirm.Focus();
                 tbPwdConfirm.SelectAll();
                 e.Cancel = true;

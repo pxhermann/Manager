@@ -1,192 +1,226 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
-#if _DB_MDB
-using System.Data.OleDb;
-#elif _DB_SQLCE
-using System.Data.SqlServerCe;
-#else 
 using System.Data.SqlClient;
-#endif 
 using System.Data;
-using System.Data.Common;
+using System;
+using System.Xml.Serialization;
+using System.Text;
 
 namespace Manager
 {
-    public struct MdbConnData
-    {
-        public string DbFile;
-        public string User;
-        public string Pwd;
-
-        public MdbConnData(string dbFile, string user, string pwd)
-        {
-            DbFile = dbFile;
-            User = user;
-            Pwd = pwd;
-        }
-        public void Reset()
-        {
-            DbFile = "";
-            User = "";
-            Pwd = "";
-        }
-        public string GetConnStr()
-        {
-            string strConn = string.Format("Provider=Microsoft.Jet.OLEDB.4.0;Data Source='{0}';", DbFile);
-            if ( !string.IsNullOrEmpty(User) )
-                strConn += string.Format("User ID={0}; Password={1};", User, Pwd);
-
-            return strConn;
-        }
-    }
-    public struct SqlCeConnData
-    {
-        public string DbFile;
-        public string Pwd;
-        public SqlCeConnData(string dbFile, string pwd)
-        {
-            DbFile = dbFile;
-            Pwd = pwd;
-        }
-        public void Reset()
-        {
-            DbFile = "";
-            Pwd = "";
-        }
-        public string GetConnStr()
-        {
-            string strConn = string.Format("Data Source='{0}';", DbFile);
-            if ( Pwd.Length > 0 )
-                strConn += string.Format("Password={0};", Pwd);
-
-            return strConn;
-        }
-    }
-    public struct SqlConnData    // use struct instead on class, so that data can be coppied by assign command
+    public class SqlConnData
     {
         public string Server;
         public bool AuthSQL;
         public string User;
         public string Pwd;
         public string Database;
-
-        public SqlConnData(string srv, bool authSQL, string user, string pwd, string db)
+        [XmlIgnore]
+        public string PwdDecrypted
         {
-            Server = srv;
-            AuthSQL = authSQL;
-            User = user;
-            Pwd = pwd;
-            Database = db;
+            get { return GM.DESDecrypt(Pwd); }
+            set { Pwd = GM.DESEncrypt(value); }
+        }
+
+        public bool IsValid()
+        {
+            return (!String.IsNullOrEmpty(Server) && !String.IsNullOrEmpty(Database) && (!AuthSQL || !String.IsNullOrEmpty(User)));
+        }
+        public SqlConnData()
+        {
+            Reset();
+        }
+        public SqlConnData(string server, string database, string user, string pwd, bool authSQL)
+        {
+            this.Server = server;
+            this.Database = database;
+            this.User = user;
+            this.Pwd = pwd;
+            this.AuthSQL = authSQL;
+        }
+        public void CopyFrom(SqlConnData src)
+        {
+            Server = src.Server;
+            AuthSQL = src.AuthSQL;
+            User = src.User;
+            Pwd = src.Pwd;
+            Database = src.Database;
         }
         public void Reset()
         {
-            Server = "(local)";
+            Server = "."; // "(local)";
             AuthSQL = false;
             User = "";
             Pwd = "";
             Database = "";
         }
-        public string GetConnStr(bool inclDB)
+        public string GetConnectionString(bool inclDB = true)
         {
-            string strConn;
+            String connStr = "Data Source=" + Server + ";";
             if (AuthSQL)
-                strConn = "Data Source=" + Server + "; User ID=" + User + "; Password=" + Pwd + ";";
+                connStr += "User ID=" + User + ";Password=" + PwdDecrypted + ";";
             else
-                strConn = "Data Source=" + Server + "; Integrated Security=SSPI;";
+                connStr += "Integrated Security=SSPI;";
 
             if (inclDB)
-                strConn += "Initial Catalog=" + Database + ";";
-
-            return strConn;
+                connStr += "Initial Catalog=" + Database + ";";
+            return connStr;
         }
     }
 
-	public class DB
-	{
-#if _DB_MDB
-        public static MdbConnData ConnData = new MdbConnData();
-#elif _DB_SQLCE
-        public static SqlCeConnData ConnData = new SqlCeConnData();
-#else
-        public static SqlConnData ConnData = new SqlConnData();
-#endif
+    public class DB
+    {
+        public static int INVALID_ID = -1;
+        public static int ALL_ID = -2;
 
-        public static DbConnection GetConnection()
+        public static SqlConnData ConnData = new SqlConnData();
+
+        public static SqlConnection OpenConnection(bool inclDB = true)
         {
-#if _DB_MDB
-            return new OleDbConnection(ConnData.GetConnStr());
-#elif _DB_SQLCE
-            return new SqlCeConnection(ConnData.GetConnStr());
-#else
-            return new SqlConnection(ConnData.GetConnStr(true));
-#endif
+            SqlConnection conn = new SqlConnection(ConnData.GetConnectionString(inclDB)); ;
+            conn.Open();
+
+            return conn;
+        }
+        // helper method - requires closing connection after usage. For safety reasons keep it private!!!
+        private static SqlCommand CreateCommand(string cmdText = "", SqlTransaction trn = null)
+        {
+            SqlCommand cmd = new SqlCommand(cmdText, null);
+            if (trn == null)
+                cmd.Connection = DB.OpenConnection();
+            else
+            {
+                cmd.Connection = trn.Connection;
+                cmd.Transaction = trn;
+            }
+            if (cmd.Connection.State != ConnectionState.Open)
+                cmd.Connection.Open();
+
+            return cmd;
         }
 
-        public static DataTable GetDataTable(string selectCmdText)
+        public static DataTable GetDataTable(string selectCmd)
         {
-            DataTable dt = new DataTable();
-#if _DB_MDB
-            using ( OleDbConnection conn = new OleDbConnection(ConnData.GetConnStr()) )
-            {
-                OleDbDataAdapter da = new OleDbDataAdapter(selectCmdText, conn);
-#elif _DB_SQLCE
-            using ( SqlCeConnection conn = new SqlCeConnection(ConnData.GetConnStr()) )
-            {
-                SqlCeDataAdapter da = new SqlCeDataAdapter(selectCmdText, conn);
-#else
-            using ( SqlConnection conn = new SqlConnection(ConnData.GetConnStr(true)) )
-            {
-                SqlDataAdapter da = new SqlDataAdapter(selectCmdText, conn);
-#endif
-                da.Fill(dt);
-            }
-            return dt;
+            return GetDataTable("", selectCmd);
+        }
+        public static DataTable GetDataTable(string tblName, string selectCmd)
+        {
+            DataTable tbl = new DataTable(tblName);
+            using (SqlConnection conn = OpenConnection())
+                (new SqlDataAdapter(selectCmd, conn)).Fill(tbl);
+            return tbl;
         }
         public static void ExecuteNoQuery(string cmdText, params object[] paramList)
         {
-#if _DB_MDB
-            using ( OleDbConnection conn = new OleDbConnection(ConnData.GetConnStr()) )
-            {
-                OleDbCommand cmd = new OleDbCommand(cmdText, conn);
-#elif _DB_SQLCE
-            using ( SqlCeConnection conn = new SqlCeConnection(ConnData.GetConnStr()) )
-            {
-                SqlCeCommand cmd = new SqlCeCommand(cmdText, conn);
-#else
-            using ( SqlConnection conn = new SqlConnection(ConnData.GetConnStr(true)) )
-            {
-                SqlCommand cmd = new SqlCommand(cmdText, conn);
-#endif
-                for (int i = 0; i+1<paramList.Length; i+=2 )
-                    cmd.Parameters.AddWithValue((string)paramList[i], paramList[i+1]);
+            ExecuteNoQuery(null, cmdText, paramList);
+        }
+        public static void ExecuteNoQuery(SqlTransaction trn, string cmdText, params object[] paramList)
+        {
+            using (SqlCommand cmd = CreateCommand(cmdText, trn))
+                try
+                {
+                    if (paramList != null)
+                        for (int i = 0; i + 1 < paramList.Length; i += 2)
+                            cmd.Parameters.AddWithValue((string)paramList[i], paramList[i + 1]);
 
-                conn.Open();
-                cmd.ExecuteNonQuery();
-            }
+                    if (cmd.Connection.State != ConnectionState.Open)
+                        cmd.Connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                finally { if (trn == null) { cmd.Connection.Dispose(); cmd.Connection = null; } }
         }
         public static object ExecuteScalar(string cmdText, params object[] paramList)
         {
-#if _DB_MDB
-            using ( OleDbConnection conn = new OleDbConnection(ConnData.GetConnStr()) )
-            {
-                OleDbCommand cmd = new OleDbCommand(cmdText, conn);
-#elif _DB_SQLCE
-            using ( SqlCeConnection conn = new SqlCeConnection(ConnData.GetConnStr()) )
-            {
-                SqlCeCommand cmd = new SqlCeCommand(cmdText, conn);
-#else
-            using ( SqlConnection conn = new SqlConnection(ConnData.GetConnStr(true)) )
-            {
-                SqlCommand cmd = new SqlCommand(cmdText, conn);
-#endif
-                for (int i = 0; i+1<paramList.Length; i+=2 )
-                    cmd.Parameters.AddWithValue((string)paramList[i], paramList[i+1]);
+            return ExecuteScalar(null, cmdText, paramList);
+        }
+        public static object ExecuteScalar(SqlTransaction trn, string cmdText, params object[] paramList)
+        {
+            using (SqlCommand cmd = CreateCommand(cmdText, trn))
+                try
+                {
+                    for (int i = 0; i + 1 < paramList.Length; i += 2)
+                        cmd.Parameters.AddWithValue((string)paramList[i], paramList[i + 1]);
 
-                conn.Open();
-                return cmd.ExecuteScalar();
-            }
+                    if (cmd.Connection.State != ConnectionState.Open)
+                        cmd.Connection.Open();
+                    return cmd.ExecuteScalar();
+                }
+                finally { if (trn == null) { cmd.Connection.Dispose(); cmd.Connection = null; } }
+        }
+        public static Object UpdateOrInsert(string tableName, string columnID, int ID, params object[] paramList)
+        {
+            return UpdateOrInsert(null, tableName, columnID, ID, paramList);
+        }
+
+        public static Object UpdateOrInsert(SqlTransaction trn, string tableName, string columnID, int ID, params object[] paramList)
+        {
+            StringBuilder sb = new StringBuilder();
+            String paramName;
+
+            SqlParameter retParam;
+            using (SqlCommand cmd = CreateCommand("", trn))
+                try
+                {
+                    cmd.Parameters.AddWithValue("@ID", ID);
+                    retParam = cmd.Parameters["@ID"];
+
+                    if (ID == INVALID_ID) // add new record
+                    {
+                        StringBuilder sbValues = new StringBuilder();
+                        sb.AppendFormat("INSERT INTO [{0}] (", tableName);
+                        for (int i = 0; i + 1 < paramList.Length; i += 2)
+                        {
+                            if (paramList[i + 1] == null)
+                                paramName = "NULL"; // use this way as AddWithValue(..., DBNull.Value) throws exception e.g. for blob (varbinary(max))
+                            else
+                            {
+                                paramName = String.Format("@p{0}", i / 2);
+                                cmd.Parameters.AddWithValue(paramName, (paramList[i + 1] == null) ? DBNull.Value : paramList[i + 1]);
+                            }
+
+                            if (i > 0)
+                            {
+                                sb.Append(',');
+                                sbValues.Append(',');
+                            }
+                            sb.AppendFormat("[{0}]", (string)paramList[i]);
+                            sbValues.AppendFormat(paramName);
+                        }
+                        sb.AppendFormat(") VALUES ({0})" +
+                                        ";SELECT @ID = @@IDENTITY",
+                                        sbValues.ToString());
+
+                        retParam.Direction = ParameterDirection.Output;
+                        retParam.SourceColumn = columnID;
+                    }
+                    else                    // update existing
+                    {
+                        sb.AppendFormat("UPDATE [{0}] SET ", tableName);
+                        for (int i = 0; i + 1 < paramList.Length; i += 2)
+                        {
+                            if (paramList[i + 1] == null)
+                                paramName = "NULL"; // use this way as AddWithValue(..., DBNull.Value) throws exception e.g. for blob (varbinary(max))
+                            else
+                            {
+                                paramName = String.Format("@p{0}", i / 2);
+                                cmd.Parameters.AddWithValue(paramName, paramList[i + 1]); //(paramList[i+1]==null)?DBNull.Value:paramList[i+1]);
+                            }
+
+                            if (i > 0)
+                                sb.Append(',');
+                            sb.AppendFormat("[{0}]={1}", (string)paramList[i], paramName);
+                        }
+
+                        sb.AppendFormat(" WHERE [{0}]=@ID", columnID);
+                    }
+
+                    // execute
+                    cmd.CommandText = sb.ToString();
+                    if (cmd.Connection.State != ConnectionState.Open)
+                        cmd.Connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+                finally { if (trn == null) { cmd.Connection.Dispose(); cmd.Connection = null; } }
+
+            return retParam.Value;
         }
     }
 }

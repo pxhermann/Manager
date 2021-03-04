@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Manager")]
-[assembly: AssemblyDescription("Testing application implementing basic functionality of typical database program handling data lists")]
+[assembly: AssemblyDescription("Demo application implementing basic functionality of database program handling user access, data evidence, adding, editing, deleting, searching,... data")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Pavel Hermann")]
 [assembly: AssemblyProduct("Manager")]
-[assembly: AssemblyCopyright("Copyright ©  2009")]
+[assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

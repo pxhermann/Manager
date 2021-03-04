@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="Current" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Manager</RootNamespace>
     <AssemblyName>Manager</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <FileUpgradeFlags>
@@ -34,10 +34,13 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;_DB_SQLCE</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -99,23 +102,11 @@
     <Compile Include="DlgProduct.Designer.cs">
       <DependentUpon>DlgProduct.cs</DependentUpon>
     </Compile>
-    <Compile Include="DlgSetupMDB.cs">
+    <Compile Include="DlgSetupDB.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DlgSetupMDB.Designer.cs">
-      <DependentUpon>DlgSetupMDB.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DlgSetupSQL.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DlgSetupSQL.designer.cs">
-      <DependentUpon>DlgSetupSQL.cs</DependentUpon>
-    </Compile>
-    <Compile Include="DlgSetupSQLCE.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DlgSetupSQLCE.Designer.cs">
-      <DependentUpon>DlgSetupSQLCE.cs</DependentUpon>
+    <Compile Include="DlgSetupDB.designer.cs">
+      <DependentUpon>DlgSetupDB.cs</DependentUpon>
     </Compile>
     <Compile Include="DlgUser.cs">
       <SubType>Form</SubType>
@@ -129,9 +120,7 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="GlobalData.cs" />
     <Compile Include="GlobalMethods.cs" />
-    <Compile Include="MapiApi.cs" />
     <Compile Include="Objects\Address.cs">
     </Compile>
     <Compile Include="Objects\Product.cs" />
@@ -156,14 +145,8 @@
     <EmbeddedResource Include="DlgProduct.resx">
       <DependentUpon>DlgProduct.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DlgSetupMDB.resx">
-      <DependentUpon>DlgSetupMDB.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DlgSetupSQL.resx">
-      <DependentUpon>DlgSetupSQL.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DlgSetupSQLCE.resx">
-      <DependentUpon>DlgSetupSQLCE.cs</DependentUpon>
+    <EmbeddedResource Include="DlgSetupDB.resx">
+      <DependentUpon>DlgSetupDB.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DlgUser.resx">
       <DependentUpon>DlgUser.cs</DependentUpon>
@@ -189,6 +172,7 @@
       <DependentUpon>ViewUser.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

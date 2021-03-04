@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Manager
 {
-    public partial class ViewProduct : Manager.BaseView
+    public partial class ViewProduct : BaseView
     {
         public ViewProduct()
         {
@@ -23,14 +19,14 @@ namespace Manager
             {
                 DataGridViewColumn col = AddTextColumn("prod_vatrate", "VAT [%]", 70);
                 DataGridViewCellStyle style = new DataGridViewCellStyle();
-                style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+                style.Alignment = DataGridViewContentAlignment.MiddleRight;
                 style.Format = "N0";
                 col.DefaultCellStyle = style;
             }
             {
                 DataGridViewColumn col = AddTextColumn("prod_saleprice", "Price", 100);
                 DataGridViewCellStyle style = new DataGridViewCellStyle();
-                style.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+                style.Alignment = DataGridViewContentAlignment.MiddleRight;
                 style.Format = "N2";
                 col.DefaultCellStyle = style;
             }
@@ -61,7 +57,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Error occured when adding product to database!");
+                GM.ShowErrorMessageBox(this, "Error occured when adding product to database!", ex);
             }
         }
         public override void OnEdit()
@@ -73,7 +69,7 @@ namespace Manager
                 DataGridViewRow curRow = dgView.CurrentRow;
                 if ( curRow == null )
                 {
-                    MessageBox.Show(this, "No row selected!", Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    GM.ShowErrorMessageBox(this, "No row selected!");
                     return;
                 }
 
@@ -91,7 +87,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Error occured when editing product!");
+                GM.ShowErrorMessageBox(this, "Error occured when editing product!", ex);
             }
         }
         public override void OnDel()
@@ -103,7 +99,7 @@ namespace Manager
                 DataGridViewRow curRow = dgView.CurrentRow;
                 if ( curRow == null )
                 {
-                    MessageBox.Show(this, "No row selected!", Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    GM.ShowErrorMessageBox(this, "No row selected!");
                     return;
                 }
 
@@ -119,7 +115,7 @@ namespace Manager
             }
             catch(Exception ex)
             {
-                GM.ReportError(this, ex, "Error occured when deleting record from database!");
+                GM.ShowErrorMessageBox(this, "Error occured when deleting record from database!", ex);
             }
         }
     }

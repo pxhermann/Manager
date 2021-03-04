@@ -64,13 +64,7 @@ namespace Manager
     public class AppSetting
     {
         public int LastUserID;
-#if _DB_MDB
-        public MdbConnData Mdb = new MdbConnData();
-#elif _DB_SQLCE
-        public SqlCeConnData SqlCe= new SqlCeConnData();
-#else
         public SqlConnData Sql = new SqlConnData();
-#endif
 
 		public AppSetting()
 		{
@@ -82,14 +76,8 @@ namespace Manager
         }
 		public void Reset()
 		{
-            LastUserID = GD.INVALID_ID;
-#if _DB_MDB
-            Mdb.Reset();
-#elif _DB_SQLCE
-            SqlCe.Reset();
-#else
+            LastUserID = DB.INVALID_ID;
             Sql.Reset();
-#endif
         }
         public static AppSetting Load()
 		{
@@ -105,41 +93,23 @@ namespace Manager
 						data = (AppSetting)x.Deserialize(sm);
                     }
 					// decrypt password
-#if _DB_MDB
-                    data.Mdb.Pwd = GM.DESDecrypt(data.Mdb.Pwd);
-#elif _DB_SQLCE
-                    data.SqlCe.Pwd = GM.DESDecrypt(data.SqlCe.Pwd);
-#else
                     data.Sql.Pwd = GM.DESDecrypt(data.Sql.Pwd);
-#endif
 				}
 				catch(Exception ex)
 				{
-//					MessageBox.Show(string.Format("Error occured when loading setup data!{0}{0}", Environment.NewLine, ex.Message);
+//					GM.ShowErrorMessageBox(null, "Error occured when loading setup data!", ex);
 				}
 			}
 			return data;
 		}
 		public void Save()
 		{
-#if _DB_MDB
-			string prevPwd = Mdb.Pwd;
-#elif _DB_SQLCE
-			string prevPwd = SqlCe.Pwd;
-#else
 			string prevPwd = Sql.Pwd;
-#endif
 
 			try
 			{
                 // encrypt password
-#if _DB_MDB
-			    Mdb.Pwd = GM.DESEncrypt(Mdb.Pwd);
-#elif _DB_SQLCE
-			    SqlCe.Pwd = GM.DESEncrypt(SqlCe.Pwd);
-#else
                 Sql.Pwd = GM.DESEncrypt(Sql.Pwd);
-#endif
 				// save to cfg file
 				using (StreamWriter sw = new StreamWriter(CfgFileName))
 				{
@@ -149,17 +119,11 @@ namespace Manager
 			}
 			catch(Exception ex)
 			{
-//  			MessageBox.Show(string.Format("Error occured when saving setup data!{0}{0}", Environment.NewLine, ex.Message);
+//				GM.ShowErrorMessageBox(null, "Error occured when saving setup data!", ex);
 			}
             finally
             {
-#if _DB_MDB
-			    Mdb.Pwd = GM.DESEncrypt(Mdb.Pwd);
-#elif _DB_SQLCE
-			    SqlCe.Pwd = prevPwd;
-#else
 			    Sql.Pwd = prevPwd;
-#endif
             }
 		}
     }
@@ -200,7 +164,7 @@ namespace Manager
 				}
 				catch(Exception ex)
 				{
-//					MessageBox.Show(string.Format("Error occured when loading setup data!{0}{0}", Environment.NewLine, ex.Message);
+//				GM.ShowErrorMessageBox(null, "Error occured when loading setup data!", ex);
 				}
 			}
 			return data;
@@ -218,7 +182,7 @@ namespace Manager
 			}
 			catch(Exception ex)
 			{
-//  			MessageBox.Show(string.Format("Error occured when saving setup data!{0}{0}", Environment.NewLine, ex.Message);
+//				GM.ShowErrorMessageBox(null, "Error occured when saving user setup data!", ex);
 			}
 		}
 #endregion        
@@ -237,7 +201,7 @@ namespace Manager
 			}
 			catch(Exception ex)
 			{
-//					MessageBox.Show(string.Format("Error occured when loading setup data!{0}{0}", Environment.NewLine, ex.Message);
+//				GM.ShowErrorMessageBox(null, "Error occured when loading setup data!", ex);
 			}
 			return data;
         }
@@ -255,10 +219,10 @@ namespace Manager
 			}
 			catch(Exception ex)
 			{
-//  			MessageBox.Show(string.Format("Error occured when saving setup data!{0}{0}", Environment.NewLine, ex.Message);
+//				GM.ShowErrorMessageBox(null, "Error occured when loading setup data!", ex);
 			}
 
-            return sb.ToString();
+			return sb.ToString();
         }
 #endregion
     }
