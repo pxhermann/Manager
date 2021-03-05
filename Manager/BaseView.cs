@@ -24,7 +24,7 @@ namespace Manager
             dgView.DataSource = bindDataSrc;
 
             dgView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
-            dgView.ColumnHeadersHeight = tbSearch.Height;
+            dgView.ColumnHeadersHeight = tbSearch.Height;   // !!! může způsobit, že se nezobrazuje sort glyph, pokud je tbSearch.Height nejak mensi nez puvodni dgView.ColumnHeadersHeight
         }
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {

@@ -78,29 +78,29 @@
 			// label3
 			// 
 			label3.AutoSize = true;
-			label3.Location = new System.Drawing.Point(14, 20);
+			label3.Location = new System.Drawing.Point(14, 46);
 			label3.Name = "label3";
 			label3.Size = new System.Drawing.Size(46, 13);
-			label3.TabIndex = 0;
+			label3.TabIndex = 2;
 			label3.Text = "Catalog:";
 			// 
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new System.Drawing.Point(22, 46);
+			label1.Location = new System.Drawing.Point(22, 20);
 			label1.Name = "label1";
 			label1.Size = new System.Drawing.Size(38, 13);
-			label1.TabIndex = 4;
+			label1.TabIndex = 0;
 			label1.Text = "Name:";
 			// 
 			// label2
 			// 
 			label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			label2.AutoSize = true;
-			label2.Location = new System.Drawing.Point(279, 20);
+			label2.Location = new System.Drawing.Point(279, 46);
 			label2.Name = "label2";
 			label2.Size = new System.Drawing.Size(29, 13);
-			label2.TabIndex = 2;
+			label2.TabIndex = 4;
 			label2.Text = "Unit:";
 			// 
 			// label4
@@ -135,30 +135,30 @@
 			// 
 			this.tbName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.tbName.Location = new System.Drawing.Point(66, 43);
+			this.tbName.Location = new System.Drawing.Point(66, 17);
 			this.tbName.MaxLength = 50;
 			this.tbName.Name = "tbName";
 			this.tbName.Size = new System.Drawing.Size(336, 20);
-			this.tbName.TabIndex = 5;
+			this.tbName.TabIndex = 1;
 			// 
 			// tbCatalog
 			// 
 			this.tbCatalog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.tbCatalog.Location = new System.Drawing.Point(66, 17);
+			this.tbCatalog.Location = new System.Drawing.Point(66, 43);
 			this.tbCatalog.MaxLength = 20;
 			this.tbCatalog.Name = "tbCatalog";
 			this.tbCatalog.Size = new System.Drawing.Size(151, 20);
-			this.tbCatalog.TabIndex = 1;
+			this.tbCatalog.TabIndex = 3;
 			// 
 			// tbUnit
 			// 
 			this.tbUnit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.tbUnit.Location = new System.Drawing.Point(314, 17);
+			this.tbUnit.Location = new System.Drawing.Point(314, 43);
 			this.tbUnit.MaxLength = 10;
 			this.tbUnit.Name = "tbUnit";
 			this.tbUnit.Size = new System.Drawing.Size(88, 20);
-			this.tbUnit.TabIndex = 3;
+			this.tbUnit.TabIndex = 5;
 			// 
 			// tbSalePrice
 			// 
