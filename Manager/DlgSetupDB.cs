@@ -36,7 +36,7 @@ namespace Manager
 		}
         private void cbServer_DropDown(object sender, EventArgs e)
         {
-            Cursor.Current = Cursors.WaitCursor;
+            Cursor = Cursors.WaitCursor;
             cbServer.BeginUpdate();
             try
             {
@@ -48,7 +48,7 @@ namespace Manager
             finally
             {
                 cbServer.EndUpdate();
-                Cursor.Current = Cursors.Default; 
+                Cursor = Cursors.Default; 
             }
         }
         private void cbDatabase_DropDown(object sender, EventArgs e)
@@ -56,7 +56,7 @@ namespace Manager
 			if ( !SaveData(false) )
 				return;
 
-            Cursor.Current = Cursors.WaitCursor;
+            Cursor = Cursors.WaitCursor;
             cbDatabase.BeginUpdate();
             try
             {
@@ -76,7 +76,7 @@ namespace Manager
             finally
             {
                 cbDatabase.EndUpdate();
-                Cursor.Current = Cursors.Default;
+                Cursor = Cursors.Default;
             }
         }
 		private void btnTestConn_Click(object sender, EventArgs e)
@@ -84,7 +84,7 @@ namespace Manager
             if (!SaveData(false))
                 return;
 
-            Cursor = Cursors.WaitCursor;
+			Cursor = Cursors.WaitCursor;
             try
             {
                 using (SqlConnection conn = new SqlConnection(Data.GetConnectionString(false)))
@@ -93,7 +93,7 @@ namespace Manager
                 GM.ShowInfoMessageBox(this, "Test connection succeeded!");
             }
             catch (Exception ex) { GM.ShowErrorMessageBox(this, "Test connection failed!", ex); }
-            finally { Cursor.Current = Cursors.Default; }
+            finally { Cursor = Cursors.Default; }
 		}
 
         private bool SaveData(bool inclDB)
